@@ -32,12 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CodeFixProvider.cs" />
-    <Compile Include="DiagnosticAnalyzer.cs" />
+    <Compile Include="DefaultParameterDiagnosticAnalyzer.cs" />
+    <Compile Include="DefaultParameterDiagnosticCodeFixProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Diagnostic.nuspec">
+    <None Include="DefaultParameterDiagnostic.nuspec">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
