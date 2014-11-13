@@ -1,0 +1,9 @@
+# IDE and build artifacts
+*.sln.ide/
+bin/
+obj/
+*.user
+*.suo
+
+# NuGet packages
+packages/
