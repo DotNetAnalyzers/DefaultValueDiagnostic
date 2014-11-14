@@ -18,11 +18,20 @@ namespace DefaultParameterDiagnostic
         internal const string MissingDefaultValueCategory = "API";
         internal const string MissingDefaultValueDescription = "Override does not include a default value which is specified in the overridden method's signature.";
 
-        internal static DiagnosticDescriptor MissingDefaultValueDiagnostic =
+        internal static readonly DiagnosticDescriptor MissingDefaultValueDiagnostic =
             new DiagnosticDescriptor(MissingDefaultValueDiagnosticId, MissingDefaultValueTitle, MissingDefaultValueMessageFormat, MissingDefaultValueCategory, DiagnosticSeverity.Warning, true, MissingDefaultValueDescription);
 
+        public const string DefaultValueMismatchDiagnosticId = "DefaultValueMismatch";
+        internal const string DefaultValueMismatchTitle = "Override specifies a different default value than appears in the overridden method's signature.";
+        internal const string DefaultValueMismatchMessageFormat = "Parameter '{0}' does not specify the same default value as '{1}'";
+        internal const string DefaultValueMismatchCategory = "API";
+        internal const string DefaultValueMismatchDescription = "Override specifies a different default value than appears in the overridden method's signature.";
+
+        internal static readonly DiagnosticDescriptor DefaultValueMismatchDiagnostic =
+            new DiagnosticDescriptor(DefaultValueMismatchDiagnosticId, DefaultValueMismatchTitle, DefaultValueMismatchMessageFormat, DefaultValueMismatchCategory, DiagnosticSeverity.Warning, true, DefaultValueMismatchDescription);
+
         private static readonly ImmutableArray<DiagnosticDescriptor> _supportedDiagnostics =
-            ImmutableArray.Create(MissingDefaultValueDiagnostic);
+            ImmutableArray.Create(MissingDefaultValueDiagnostic, DefaultValueMismatchDiagnostic);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
@@ -60,7 +69,7 @@ namespace DefaultParameterDiagnostic
                     if (implementingMethod == null)
                         continue;
 
-                    CheckForMissingDefaultValues(context, implementingMethod, method);
+                    CheckDefaultValues(context, implementingMethod, method);
                 }
             }
         }
@@ -94,10 +103,10 @@ namespace DefaultParameterDiagnostic
             if (overriddenMethod == null)
                 return;
 
-            CheckForMissingDefaultValues(context, methodSymbol, overriddenMethod);
+            CheckDefaultValues(context, methodSymbol, overriddenMethod);
         }
 
-        private void CheckForMissingDefaultValues(SyntaxNodeAnalysisContext context, IMethodSymbol method, IMethodSymbol baseMethod)
+        private void CheckDefaultValues(SyntaxNodeAnalysisContext context, IMethodSymbol method, IMethodSymbol baseMethod)
         {
             var methodParameters = method.Parameters;
             var baseMethodParameters = baseMethod.Parameters;
@@ -106,21 +115,43 @@ namespace DefaultParameterDiagnostic
 
             for (int i = methodParameters.Length - 1; i >= 0; i--)
             {
+                // assume valid signature, where all parameters with default values appear at the end of the argument
+                // list
                 if (!baseMethodParameters[i].HasExplicitDefaultValue)
                     return;
 
                 if (methodParameters[i].HasExplicitDefaultValue)
-                    continue;
-
-                var location = methodParameters[i].Locations.FirstOrDefault();
-                if (!location.IsInSource)
-                    return;
-
-                int position = location.SourceSpan.Start;
-                string methodName = GetQualifiedMethodName(context.SemanticModel, position, method);
-                string baseMethodName = GetQualifiedMethodName(context.SemanticModel, position, baseMethod);
-                context.ReportDiagnostic(Diagnostic.Create(MissingDefaultValueDiagnostic, location, methodName, baseMethodName));
+                    CheckForDefaultValueMismatch(context, method, methodParameters[i], baseMethod, baseMethodParameters[i]);
+                else
+                    ReportMissingDefaultValue(context, method, methodParameters[i], baseMethod, baseMethodParameters[i]);
             }
+        }
+
+        private void ReportMissingDefaultValue(SyntaxNodeAnalysisContext context, IMethodSymbol method, IParameterSymbol parameter, IMethodSymbol baseMethod, IParameterSymbol baseParameter)
+        {
+            var location = parameter.Locations.FirstOrDefault();
+            if (!location.IsInSource)
+                return;
+
+            int position = location.SourceSpan.Start;
+            string methodName = GetQualifiedMethodName(context.SemanticModel, position, method);
+            string baseMethodName = GetQualifiedMethodName(context.SemanticModel, position, baseMethod);
+            context.ReportDiagnostic(Diagnostic.Create(MissingDefaultValueDiagnostic, location, methodName, baseMethodName));
+        }
+
+        private void CheckForDefaultValueMismatch(SyntaxNodeAnalysisContext context, IMethodSymbol method, IParameterSymbol parameter, IMethodSymbol baseMethod, IParameterSymbol baseParameter)
+        {
+            if (object.Equals(parameter.ExplicitDefaultValue, baseParameter.ExplicitDefaultValue))
+                return;
+
+            var location = parameter.Locations.FirstOrDefault();
+            if (!location.IsInSource)
+                return;
+
+            int position = location.SourceSpan.Start;
+            string methodName = GetQualifiedMethodName(context.SemanticModel, position, method);
+            string baseMethodName = GetQualifiedMethodName(context.SemanticModel, position, baseMethod);
+            context.ReportDiagnostic(Diagnostic.Create(DefaultValueMismatchDiagnostic, location, methodName, baseMethodName));
         }
 
         private static string GetQualifiedMethodName(SemanticModel semanticModel, int position, IMethodSymbol method)
