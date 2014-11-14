@@ -5,4 +5,4 @@ errors which are likely to affect users. The following diagnostic messages are c
 
 | Diagnostic | Description |
 | --- | --- |
-| `MissingDefaultValueDiagnostic` (with code fix) | A method overrides or implements a method which contains a default value for a parameter `x`, but the override does not specify a default value for the same parameter `x`. |
+| `MissingDefaultValue` (with code fix) | A method overrides or implements a method which contains a default value for a parameter `x`, but the override does not specify a default value for the same parameter `x`. |
