@@ -41,7 +41,7 @@ namespace DefaultParameterDiagnostic.Test
     }";
             var expected = new DiagnosticResult
             {
-                Id = DefaultParameterDiagnosticAnalyzer.DiagnosticId,
+                Id = DefaultParameterDiagnosticAnalyzer.MissingDefaultValueDiagnosticId,
                 Message = String.Format("Type name '{0}' contains lowercase letters", "TypeName"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations =
