@@ -1,22 +1,18 @@
 ﻿<?xml version="1.0"?>
 <package>
   <metadata>
-    <id>DefaultParameterDiagnostic</id>
-    <version>1.0.0.0</version>
-    <title>DefaultParameterDiagnostic</title>
-    <authors>DefaultParameterDiagnostic</authors>
-    <owners>DefaultParameterDiagnostic</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <id>DefaultValueDiagnostic</id>
+    <version>0.0.0</version>
+    <title>Default Value Diagnostic</title>
+    <authors>Sam Harwell</authors>
+    <owners>Sam Harwell</owners>
+    <licenseUrl>https://raw.githubusercontent.com/DotNetAnalyzers/DefaultValueDiagnostic/$version$/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/DotNetAnalyzers/DefaultValueDiagnostic</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>DefaultParameterDiagnostic</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright</copyright>
-    <tags>Tag1 Tag2</tags>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System" targetFramework="" />
-    </frameworkAssemblies>
+    <description>Diagnostic and code fix for common issues associated with the use of default parameter values.</description>
+    <releaseNotes>https://github.com/DotNetAnalyzers/DefaultValueDiagnostic/releases/$version$</releaseNotes>
+    <copyright>Copyright © Sam Harwell 2014</copyright>
+    <tags>roslyn diagnostic analyzer codefix</tags>
   </metadata>
   <files>
     <file src="*.dll" target="tools\analyzers\" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*" />
